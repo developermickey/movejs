@@ -1,0 +1,11 @@
+{
+  "name": "movejs-example",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MoveJS example application",
+  "scripts": {
+    "dev": "movejs dev",
+    "build": "movejs build",
+    "start": "movejs start"
+  }
+}
