@@ -3,8 +3,12 @@
   "version": "0.1.0",
   "description": "MoveJS CLI - Project scaffolding, dev server, build, and deployment tools",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/cli.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/cli.js",
+    "./create": "./dist/create.js"
+  },
   "bin": {
     "movejs": "./dist/cli.js",
     "create-movejs": "./dist/create.js"

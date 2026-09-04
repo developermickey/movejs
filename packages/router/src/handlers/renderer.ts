@@ -44,7 +44,7 @@ export async function renderSSR(context: RenderContext): Promise<RenderResult> {
   const html = renderToString(route.component, { ...params, ...query, data });
 
   // Generate head tags
-  const head = generateHead(route.config, params);
+  const head = generateHead(route.config, params, request?.url);
 
   return {
     html,
@@ -77,7 +77,7 @@ export async function renderSSG(context: RenderContext): Promise<RenderResult> {
   // Render component to HTML
   const html = renderToString(route.component, { ...params, ...query, data });
 
-  // Generate head tags
+// Generate head tags
   const head = generateHead(route.config, params);
 
   return {
@@ -184,33 +184,47 @@ function renderToString(component: any, props: Record<string, any>): string {
 }
 
 // Helper: Generate HTML head
-function generateHead(config: RouteConfig, params: Record<string, string>): RenderResult['head'] {
+function generateHead(config: RouteConfig, params: Record<string, string>, requestUrl?: string): RenderResult['head'] {
   const seo = config.seo || {};
-  
+  const siteBase = (process.env.MOVEJS_URL || '').replace(/\/$/, '');
+  const canonical = seo.canonical || '';
+  const pageUrl = requestUrl
+    || (/^https?:/.test(canonical) ? canonical : '')
+    || (siteBase ? `${siteBase}${canonical}` : '');
+
   const meta = [
     { name: 'description', content: seo.description || '' },
     { property: 'og:title', content: seo.title || '' },
     { property: 'og:description', content: seo.description || '' },
     { property: 'og:image', content: seo.ogImage || '' },
     { property: 'og:type', content: seo.ogType || 'website' },
-    { name: 'twitter:card', content: seo.twitterCard || 'summary_large_image' }
+    { name: 'twitter:card', content: seo.twitterCard || 'summary_large_image' },
+    { name: 'twitter:title', content: seo.title || '' },
+    { name: 'twitter:description', content: seo.description || '' },
+    { name: 'twitter:image', content: seo.ogImage || '' },
+    { name: 'theme-color', content: seo.themeColor || '' }
   ];
 
-  if (seo.noindex) {
-    meta.push({ name: 'robots', content: 'noindex' });
+  if (pageUrl) {
+    meta.push({ property: 'og:url', content: pageUrl });
   }
 
-  if (seo.nofollow) {
+  if (seo.noindex && seo.nofollow) {
+    meta.push({ name: 'robots', content: 'noindex, nofollow' });
+  } else if (seo.noindex) {
+    meta.push({ name: 'robots', content: 'noindex' });
+  } else if (seo.nofollow) {
     meta.push({ name: 'robots', content: 'nofollow' });
   }
 
   return {
     title: seo.title || '',
-    meta: meta.filter(m => m.content),
+    meta: meta.filter((m) => m.content),
     links: [
+      ...(config.headLinks || []),
       { rel: 'canonical', href: seo.canonical || '' }
-    ].filter(l => l.href),
-    scripts: []
+    ].filter((l) => l.href),
+    scripts: config.headScripts || []
   };
 }
 

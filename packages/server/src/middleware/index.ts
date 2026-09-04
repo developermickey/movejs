@@ -287,6 +287,8 @@ export function staticFiles(root: string, options: {
 
     res.setHeader('Content-Type', mimeTypes[ext] || 'application/octet-stream');
     res.setHeader('Cache-Control', `public, max-age=${maxAge}`);
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     
     if (etag) {
       const etagValue = `"${stat.size}-${stat.mtimeMs}"`;

@@ -11,8 +11,17 @@ export const config = {
     ogType: 'article',
     ogImage: '/logo.svg',
     schema: 'TechArticle',
-    canonical: '/learn/seo'
-  }
+    canonical: '/learn/seo',
+    themeColor: '#0b0f1a'
+  },
+  headLinks: [
+    { rel: 'stylesheet', href: '/styles.css' },
+    { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' },
+    { rel: 'apple-touch-icon', href: '/logo.svg' }
+  ],
+  headScripts: [
+    { src: '/app.js' }
+  ]
 };
 
 export default function Seo() {
@@ -75,7 +84,7 @@ export default function Seo() {
 
       <h2>SEO fields</h2>
       <table>
-        <thead><tr><th>Field</th><th>Tag</th><th>Notes</th></tr></thead>
+        <thead><tr><th scope="col">Field</th><th scope="col">Tag</th><th scope="col">Notes</th></tr></thead>
         <tbody>
           <tr><td><code>title</code></td><td><code>&lt;title&gt;</code> + <code>og:title</code></td><td>Required</td></tr>
           <tr><td><code>description</code></td><td><code>&lt;meta name="description"&gt;</code></td><td>Also used by JSON-LD</td></tr>

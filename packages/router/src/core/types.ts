@@ -32,6 +32,10 @@ export interface RouteConfig {
   loader?: Loader;
   /** Parent layout name */
   layout?: string;
+  /** Extra <link> tags to inject into <head> (stylesheets, icons, preloads) */
+  headLinks?: Array<{ rel: string; href: string; type?: string; sizes?: string }>;
+  /** Extra <script> tags to inject before </body> */
+  headScripts?: Array<{ src?: string; content?: string; type?: string; defer?: boolean }>;
 }
 
 export interface SEOConfig {
@@ -44,6 +48,7 @@ export interface SEOConfig {
   canonical?: string;
   noindex?: boolean;
   nofollow?: boolean;
+  themeColor?: string;
   alternates?: Array<{ lang: string; href: string }>;
 }
 

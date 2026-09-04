@@ -182,6 +182,43 @@ describe('renderSSR', () => {
     expect(result.head.meta.some((m) => m.name === 'description' && m.content === 'D')).toBe(true);
     expect(result.head.links.some((l) => l.rel === 'canonical' && l.href === 'https://x.com/')).toBe(true);
   });
+
+  it('injects headLinks, headScripts and completes open-graph/twitter tags', async () => {
+    const route: any = {
+      pattern: '/',
+      regex: /^\/$/,
+      params: [],
+      filePath: 'pages/index.tsx',
+      config: {
+        seo: {
+          title: 'T',
+          description: 'D',
+          ogImage: '/og.png',
+          ogType: 'article',
+          noindex: true,
+          nofollow: true
+        },
+        headLinks: [{ rel: 'stylesheet', href: '/styles.css' }],
+        headScripts: [{ src: '/app.js' }]
+      },
+      component: () => createElement('p', null, 'x')
+    };
+
+    const result = await renderSSR({
+      route,
+      params: {},
+      query: {},
+      request: new Request('https://movejs.dev/docs')
+    });
+
+    const m = result.head.meta;
+    expect(m.some((x: any) => x.property === 'og:url' && x.content === 'https://movejs.dev/docs')).toBe(true);
+    expect(m.some((x: any) => x.name === 'twitter:title' && x.content === 'T')).toBe(true);
+    expect(m.some((x: any) => x.name === 'twitter:image' && x.content === '/og.png')).toBe(true);
+    expect(m.some((x: any) => x.name === 'robots' && x.content === 'noindex, nofollow')).toBe(true);
+    expect(result.head.links.some((l: any) => l.rel === 'stylesheet' && l.href === '/styles.css')).toBe(true);
+    expect(result.head.scripts).toEqual([{ src: '/app.js' }]);
+  });
 });
 
 describe('renderCSR', () => {

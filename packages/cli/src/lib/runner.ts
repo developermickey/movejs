@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import * as esbuild from 'esbuild';
 import { createServer, staticFiles } from '@movejs/server';
 import { FileScanner, getRenderer } from '@movejs/router';
+import { SitemapGenerator } from '@movejs/seo';
 
 const require = createRequire(import.meta.url);
 
@@ -124,6 +125,8 @@ export async function runMoveJS(options: RunnerOptions = {}): Promise<void> {
         for (const [k, v] of Object.entries(result.headers || {})) {
           res.set(k, v);
         }
+        res.set('X-Content-Type-Options', 'nosniff');
+        res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
         res.html(wrapDocument(result.html, result.head));
       } catch (err) {
         res.status(500).html(
@@ -187,6 +190,25 @@ export async function buildApp(options: { appDir?: string; output?: string; mini
   };
 
   writeFileSync(join(output, 'manifest.json'), JSON.stringify(manifest, null, 2));
+
+  // Generate sitemap.xml into public/ so dev, start and static hosts all serve it
+  const publicDir = [join(dirname(appDir), 'public'), join(appDir, 'public')].find((d) => existsSync(d));
+  if (publicDir) {
+    try {
+      const baseURL = (process.env.MOVEJS_URL || 'http://localhost:3000').replace(/\/$/, '');
+      const generator = new SitemapGenerator(baseURL);
+      const staticRoutes = routes.filter((r) => /^\/[^:*[\]]*$/.test(r.pattern));
+      staticRoutes.forEach((r, i) => generator.add({
+        url: r.pattern,
+        priority: r.pattern === '/' ? 1 : 0.8,
+        lastModified: new Date()
+      }));
+      writeFileSync(join(publicDir, 'sitemap.xml'), generator.generateXML());
+      console.log(`  ✅ Generated sitemap.xml (${generator.getCount()} URLs)`);
+    } catch (err) {
+      console.error(`  ⚠️  sitemap generation skipped: ${(err as Error).message}`);
+    }
+  }
 
   return { appDir, output, routes };
 }
@@ -344,6 +366,11 @@ function wrapDocument(body: string, head: any): string {
   const links = (h.links || [])
     .map((l: any) => `<link ${Object.entries(l).map(([k, v]) => `${k}="${v}"`).join(' ')} />`)
     .join('');
+  const scripts = (h.scripts || [])
+    .map((s: any) => s.src
+      ? `<script src="${s.src}"${s.type ? ` type="${s.type}"` : ''}></script>`
+      : `<script${s.type ? ` type="${s.type}"` : ''}>${s.content || ''}</script>`)
+    .join('');
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -352,7 +379,7 @@ function wrapDocument(body: string, head: any): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   ${title}${meta}${links}
 </head>
-<body>${body}</body>
+<body>${body}${scripts}</body>
 </html>`;
 }
 

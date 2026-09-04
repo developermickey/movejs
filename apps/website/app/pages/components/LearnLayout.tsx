@@ -14,7 +14,7 @@ export default function LearnLayout(props: { slug: string; children: any }) {
   return (
     <div>
       <SiteHeader />
-      <main className="container docs-grid">
+      <main id="main" className="container docs-grid">
         <aside className="docs-sidebar" aria-label="Documentation navigation">
           {SIDEBAR.map((group) => (
             <div className="group" key={group.title}>

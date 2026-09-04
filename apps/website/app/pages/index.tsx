@@ -11,8 +11,17 @@ export const config = {
     ogType: 'website',
     ogImage: '/logo.svg',
     schema: 'WebSite',
-    canonical: '/'
-  }
+    canonical: '/',
+    themeColor: '#0b0f1a'
+  },
+  headLinks: [
+    { rel: 'stylesheet', href: '/styles.css' },
+    { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' },
+    { rel: 'apple-touch-icon', href: '/logo.svg' }
+  ],
+  headScripts: [
+    { src: '/app.js' }
+  ]
 };
 
 const FEATURES = [
@@ -54,6 +63,7 @@ export default function HomePage() {
     <div>
       <SiteHeader />
 
+      <main id="main">
       {/* Hero */}
       <section className="hero" aria-label="Introduction">
         <div className="container">
@@ -264,6 +274,7 @@ createEffect(() => {
           </div>
         </div>
       </section>
+      </main>
 
       <SiteFooter />
     </div>

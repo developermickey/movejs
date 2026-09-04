@@ -11,8 +11,17 @@ export const config = {
     ogType: 'article',
     ogImage: '/logo.svg',
     schema: 'TechArticle',
-    canonical: '/learn/data'
-  }
+    canonical: '/learn/data',
+    themeColor: '#0b0f1a'
+  },
+  headLinks: [
+    { rel: 'stylesheet', href: '/styles.css' },
+    { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' },
+    { rel: 'apple-touch-icon', href: '/logo.svg' }
+  ],
+  headScripts: [
+    { src: '/app.js' }
+  ]
 };
 
 export default function Data() {
@@ -55,7 +64,7 @@ export const db = await createDatabase({
 });`}</Code>
       <p>Available model methods:</p>
       <table>
-        <thead><tr><th>Method</th><th>Description</th></tr></thead>
+        <thead><tr><th scope="col">Method</th><th scope="col">Description</th></tr></thead>
         <tbody>
           <tr><td><code>findUnique</code></td><td>Find one row, or <code>null</code></td></tr>
           <tr><td><code>findFirst</code></td><td>Find the first matching row</td></tr>

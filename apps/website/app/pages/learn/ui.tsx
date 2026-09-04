@@ -11,8 +11,17 @@ export const config = {
     ogType: 'article',
     ogImage: '/logo.svg',
     schema: 'TechArticle',
-    canonical: '/learn/ui'
-  }
+    canonical: '/learn/ui',
+    themeColor: '#0b0f1a'
+  },
+  headLinks: [
+    { rel: 'stylesheet', href: '/styles.css' },
+    { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' },
+    { rel: 'apple-touch-icon', href: '/logo.svg' }
+  ],
+  headScripts: [
+    { src: '/app.js' }
+  ]
 };
 
 export default function Ui() {

@@ -11,8 +11,17 @@ export const config = {
     ogType: 'article',
     ogImage: '/logo.svg',
     schema: 'TechArticle',
-    canonical: '/learn/rendering'
-  }
+    canonical: '/learn/rendering',
+    themeColor: '#0b0f1a'
+  },
+  headLinks: [
+    { rel: 'stylesheet', href: '/styles.css' },
+    { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' },
+    { rel: 'apple-touch-icon', href: '/logo.svg' }
+  ],
+  headScripts: [
+    { src: '/app.js' }
+  ]
 };
 
 export default function Rendering() {
@@ -30,7 +39,7 @@ export default function Rendering() {
       </p>
       <table>
         <thead>
-          <tr><th>Mode</th><th>Render time</th><th>Cache</th><th>Best for</th></tr>
+          <tr><th scope="col">Mode</th><th scope="col">Render time</th><th scope="col">Cache</th><th scope="col">Best for</th></tr>
         </thead>
         <tbody>
           <tr><td><code>ssr</code></td><td>Per request</td><td>None</td><td>Personalized, always-fresh pages</td></tr>

@@ -1,0 +1,29 @@
+{
+  "name": "create-movejs",
+  "version": "0.1.0",
+  "description": "Scaffold a new MoveJS project with one command",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "create-movejs": "./dist/index.js"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup --config tsup.config.ts",
+    "dev": "tsup --config tsup.config.ts --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@movejs/cli": "file:../cli",
+    "execa": "^8.0.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  },
+  "license": "MIT"
+}

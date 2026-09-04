@@ -10,8 +10,7 @@ export function SiteHeader() {
   ];
   return (
     <div>
-      <link rel="stylesheet" href="/styles.css" />
-      <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+      <a className="skip-link" href="#main">Skip to content</a>
       <header className="site-header">
         <div className="container">
           <a className="brand" href="/">
@@ -38,7 +37,6 @@ export function SiteHeader() {
           </details>
         </div>
       </header>
-      <script src="/app.js" defer></script>
     </div>
   );
 }

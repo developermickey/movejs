@@ -152,8 +152,11 @@ export function renderToDocument(
     .join('');
   const scripts = (head.scripts || [])
     .map((s) => {
-      if (s.content) return `<script>${s.content}</script>`;
-      return `<script src="${escapeHtml(s.src || '')}"></script>`;
+      if (s.src) {
+        const type = s.type ? ` type="${escapeHtml(s.type)}"` : '';
+        return `<script src="${escapeHtml(s.src)}"${type}></script>`;
+      }
+      return `<script${s.type ? ` type="${escapeHtml(s.type)}"` : ''}>${s.content || ''}</script>`;
     })
     .join('');
 

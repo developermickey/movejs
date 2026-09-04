@@ -52,6 +52,7 @@ export async function createProjectFromTemplate(options: CreateProjectOptions): 
         '@movejs/ui': '^0.1.0'
       },
       devDependencies: {
+        '@movejs/cli': '^0.1.0',
         typescript: '^5.4.0',
         '@types/node': '^20.0.0'
       }
@@ -87,6 +88,13 @@ export async function createProjectFromTemplate(options: CreateProjectOptions): 
   await writeFile(
     join(directory, 'app', 'pages', `index.${ext}`),
     INDEX_PAGE,
+    'utf-8'
+  );
+
+  // About page (linked from the default layout)
+  await writeFile(
+    join(directory, 'app', 'pages', `about.${ext}`),
+    ABOUT_PAGE,
     'utf-8'
   );
 
@@ -170,9 +178,7 @@ Visit http://localhost:3000 to see your app.
 `);
 }
 
-const DEFAULT_CONFIG = `import { defineConfig } from 'movejs';
-
-export default defineConfig({
+const DEFAULT_CONFIG = `export default {
   render: 'hybrid',
   database: {
     provider: 'postgresql',
@@ -186,7 +192,7 @@ export default defineConfig({
     siteName: 'My MoveJS App',
     generateSitemap: true
   }
-});
+};
 `;
 
 const INDEX_PAGE = `import { createSignal } from '@movejs/core';
@@ -207,8 +213,26 @@ export default function IndexPage() {
       <h1>Welcome to MoveJS 🚀</h1>
       <p>A fast, secure, full-stack JavaScript framework</p>
       <button onClick={() => setCount(c => c + 1)}>
-        Count: {count}
+        Count: {count()}
       </button>
+    </main>
+  );
+}
+`;
+
+const ABOUT_PAGE = `export const config = {
+  render: 'ssr',
+  seo: {
+    title: 'About | My MoveJS App',
+    description: 'About this MoveJS app'
+  }
+};
+
+export default function AboutPage() {
+  return (
+    <main>
+      <h1>About</h1>
+      <p>This page was scaffolded by create-movejs.</p>
     </main>
   );
 }
