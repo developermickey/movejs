@@ -1,4 +1,5 @@
 import type { Route, RouteConfig, RenderMode, LoaderContext, LoaderResult } from '../core/types';
+import { renderToString as coreRenderToString } from '@movejs/core';
 
 // Rendering handlers for different modes
 
@@ -40,7 +41,7 @@ export async function renderSSR(context: RenderContext): Promise<RenderResult> {
   }
 
   // Render component to HTML
-  const html = await renderToString(route.component, { ...params, ...query, data });
+  const html = renderToString(route.component, { ...params, ...query, data });
 
   // Generate head tags
   const head = generateHead(route.config, params);
@@ -74,7 +75,7 @@ export async function renderSSG(context: RenderContext): Promise<RenderResult> {
   }
 
   // Render component to HTML
-  const html = await renderToString(route.component, { ...params, ...query, data });
+  const html = renderToString(route.component, { ...params, ...query, data });
 
   // Generate head tags
   const head = generateHead(route.config, params);
@@ -122,7 +123,7 @@ export async function renderISR(context: RenderContext): Promise<RenderResult & 
   }
 
   // Render component to HTML
-  const html = await renderToString(route.component, { ...params, ...query, data });
+  const html = renderToString(route.component, { ...params, ...query, data });
 
   // Generate head tags
   const head = generateHead(route.config, params);
@@ -172,16 +173,10 @@ export async function renderEdge(context: RenderContext): Promise<RenderResult> 
   return renderSSR(context);
 }
 
-// Helper: Render component to string
-async function renderToString(component: any, props: Record<string, any>): Promise<string> {
-  // This would use the core renderer in SSR mode
-  // For now, return a placeholder
+// Helper: Render component to string using core SSR
+function renderToString(component: any, props: Record<string, any>): string {
   try {
-    if (typeof component === 'function') {
-      const result = component(props);
-      return result?.html || '';
-    }
-    return '';
+    return coreRenderToString(component, props);
   } catch (error) {
     console.error('SSR Error:', error);
     return '<div>Error rendering component</div>';

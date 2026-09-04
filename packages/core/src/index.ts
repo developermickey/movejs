@@ -41,5 +41,8 @@ export type { VNode, VNodeChild, Component, Ref, ComponentInstance } from './dom
 // JSX Runtime
 export { jsx, jsxs, jsxDEV, Fragment as FragmentComponent } from './jsx/jsx-runtime';
 
+// SSR
+export { renderToString, renderToDocument } from './ssr';
+
 // Version
 export const VERSION = '0.1.0';

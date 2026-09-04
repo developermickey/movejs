@@ -232,7 +232,12 @@ export function createServer(config: ServerConfig = {}): ServerInstance {
   // Parse route pattern
   function parsePattern(pattern: string): { regex: RegExp; paramNames: string[] } {
     const paramNames: string[] = [];
-    
+
+    // Catch-all
+    if (pattern === '*') {
+      return { regex: /^.*$/, paramNames: [] };
+    }
+
     let regexStr = pattern
       .replace(/\[([^\]]+)\]/g, (_, name) => {
         paramNames.push(name);

@@ -22,7 +22,12 @@
     "inquirer": "^9.2.0",
     "ora": "^8.0.0",
     "execa": "^8.0.0",
-    "fs-extra": "^11.2.0"
+    "fs-extra": "^11.2.0",
+    "esbuild": "^0.21.0",
+    "@movejs/core": "file:../core",
+    "@movejs/router": "file:../router",
+    "@movejs/server": "file:../server",
+    "@movejs/seo": "file:../seo"
   },
   "devDependencies": {
     "tsup": "^8.0.0",

@@ -9,7 +9,9 @@ export function jsx(
   props: Record<string, any>,
   key?: string | number
 ): VNode {
-  return createElement(type, { ...props, key });
+  const { children, ...rest } = props || {};
+  const kids = Array.isArray(children) ? (children as any[]) : children == null ? [] : [children];
+  return createElement(type, { ...rest, key }, ...kids);
 }
 
 export function jsxs(
@@ -17,7 +19,9 @@ export function jsxs(
   props: Record<string, any>,
   key?: string | number
 ): VNode {
-  return createElement(type, { ...props, key });
+  const { children, ...rest } = props || {};
+  const kids = Array.isArray(children) ? (children as any[]) : children == null ? [] : [children];
+  return createElement(type, { ...rest, key }, ...kids);
 }
 
 export function jsxDEV(
@@ -27,7 +31,9 @@ export function jsxDEV(
   source?: { fileName: string; lineNumber: number },
   self?: any
 ): VNode {
-  const vnode = createElement(type, { ...props, key });
+  const { children, ...rest } = props || {};
+  const kids = Array.isArray(children) ? (children as any[]) : children == null ? [] : [children];
+  const vnode = createElement(type, { ...rest, key }, ...kids);
 
   // Add dev information
   if (source) {
