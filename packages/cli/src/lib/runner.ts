@@ -84,9 +84,10 @@ export async function runMoveJS(options: RunnerOptions = {}): Promise<void> {
     compression: true
   });
 
-  // Serve static files from public/
-  const publicDir = join(appDir, 'public');
-  if (existsSync(publicDir)) {
+  // Serve static files from public/ (project root, or app/public as fallback)
+  const publicDir = [join(dirname(appDir), 'public'), join(appDir, 'public')]
+    .find((p) => existsSync(p));
+  if (publicDir) {
     server.use(staticFiles(publicDir, { maxAge: mode === 'dev' ? 0 : 86400 }));
   }
 
