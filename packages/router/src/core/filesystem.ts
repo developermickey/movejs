@@ -129,12 +129,27 @@ export class FileScanner {
     try {
       const content = await readFile(filePath, 'utf-8');
       
-      // Extract config from export const config = { ... }
-      const configMatch = content.match(/export\s+const\s+config\s*=\s*(\{[^}]+\})/s);
+// Extract config from export const config = { ... }
+      const configMatch = content.match(/export\s+const\s+config\s*=\s*(\{.*\})/s);
       if (configMatch) {
         try {
+          // Find the matching closing brace (handles nested objects)
+          const raw = configMatch[1];
+          let depth = 0;
+          let end = -1;
+          for (let i = 0; i < raw.length; i++) {
+            if (raw[i] === '{') depth++;
+            else if (raw[i] === '}') {
+              depth--;
+              if (depth === 0) {
+                end = i + 1;
+                break;
+              }
+            }
+          }
+          const configJson = end > 0 ? raw.slice(0, end) : raw;
           // Simple eval for config extraction
-          const config = new Function(`return ${configMatch[1]}`)();
+          const config = new Function(`return ${configJson}`)();
           return config;
         } catch {
           // Fallback to default config

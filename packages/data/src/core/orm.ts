@@ -86,7 +86,8 @@ export class ORM {
       },
 
       async create(options: CreateOptions) {
-        return (await orm.execMutation('query', table, options.data)) as T;
+        const result = await orm.execMutation('query', table, options.data);
+        return (result.returning?.[0] ?? result.rows?.[0]) as T;
       },
 
       async createMany(options: { data: Record<string, any>[]; skipDuplicates?: boolean }) {
@@ -113,7 +114,8 @@ export class ORM {
           await orm.execMutation('execute', table, options.update, options.where);
           return (await orm.execQuery({ table, where: options.where, take: 1 }))[0] as T;
         }
-        return (await orm.execMutation('query', table, options.create)) as T;
+        const created = await orm.execMutation('query', table, options.create);
+        return (created.returning?.[0] ?? created.rows?.[0]) as T;
       },
 
       async delete(options: DeleteOptions) {
@@ -181,14 +183,33 @@ export class ORM {
     where?: WhereClause
   ): Promise<{ rowCount?: number; affectedRows?: number; rows?: any[]; returning?: any[] }> {
     if (op === 'delete') {
-      const builder = new QueryBuilder(table);
-      if (where && Object.keys(where).length) {
-        builder.where(where);
-      }
-      const sql = `DELETE FROM ${table} WHERE ${this.buildDeleteWhere(where)}`;
-      const { params } = builder['toSQL']();
+      const params: any[] = [];
+      const whereSql = where && Object.keys(where).length
+        ? `WHERE ${this.buildWhereString(where, params)}`
+        : '';
+      const sql = `DELETE FROM ${table} ${whereSql}`;
       const result = await this.client.execute(sql, params);
       return { rowCount: result?.rowCount, affectedRows: result?.affectedRows, rows: result?.rows };
+    }
+
+    if (op === 'execute') {
+      // UPDATE
+      if (Object.keys(data).length === 0) {
+        throw new Error('update requires at least one data field');
+      }
+      const setParams: any[] = [];
+      const setSql = Object.keys(data)
+        .map((key, i) => {
+          setParams.push(data[key]);
+          return `${key} = $${i + 1}`;
+        })
+        .join(', ');
+      const whereSql = where && Object.keys(where).length
+        ? `WHERE ${this.buildWhereString(where, setParams)}`
+        : '';
+      const sql = `UPDATE ${table} SET ${setSql} ${whereSql} RETURNING *`;
+      const result = await this.client.query(sql, setParams);
+      return { rowCount: result?.length, rows: result, returning: result };
     }
 
     // INSERT
@@ -201,16 +222,6 @@ export class ORM {
       return { rows: result, returning: result };
     }
     return { rowCount: result?.length, rows: result };
-  }
-
-  private buildDeleteWhere(where?: WhereClause): string {
-    if (!where || Object.keys(where).length === 0) return 'TRUE';
-    const qb = new QueryBuilder('dummy');
-    const builder = qb as any;
-    // Reuse the WHERE builder logic from QueryBuilder
-    const params: any[] = [];
-    const sql = this.buildWhereString(where, params);
-    return sql;
   }
 
   private buildWhereString(clause: WhereClause, params: any[]): string {

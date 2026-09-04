@@ -70,7 +70,9 @@ export class Signal<T> {
   }
 
   private _notify(): void {
-    for (const sub of this._subscribers) {
+    // Snapshot subscribers: effects re-subscribe during execution, and
+    // mutating a Set while iterating it visits newly added entries (infinite loop).
+    for (const sub of Array.from(this._subscribers)) {
       if (batchDepth > 0) {
         if (sub instanceof Effect) {
           pendingEffects.add(sub);
@@ -179,7 +181,7 @@ export class Computed<T> {
 
   _notify(): void {
     this._dirty = true;
-    for (const sub of this._subscribers) {
+    for (const sub of Array.from(this._subscribers)) {
       if (sub instanceof Effect) {
         if (batchDepth > 0) {
           pendingEffects.add(sub);

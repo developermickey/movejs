@@ -20,7 +20,9 @@
       "types": "./dist/client.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -28,11 +30,17 @@
     "test": "vitest run",
     "clean": "rm -rf dist"
   },
-  "keywords": ["movejs", "reactive", "signals", "framework", "virtual-dom"],
+  "keywords": [
+    "movejs",
+    "reactive",
+    "signals",
+    "framework",
+    "virtual-dom"
+  ],
   "license": "MIT",
   "devDependencies": {
     "tsup": "^8.0.0",
     "typescript": "^5.4.0",
-    "vitest": "^1.0.0"
+    "vitest": "^4.1.11"
   }
 }

@@ -21,11 +21,11 @@ export type { SignalOptions, EffectOptions, Store } from './reactive/signals';
 
 // Virtual DOM
 export {
-  createElement,
   render,
   patch,
   applyProps,
-  Portal
+  Portal,
+  createElement as mountNode
 } from './dom/renderer';
 
 export {
@@ -33,7 +33,8 @@ export {
   isVNode,
   createText,
   cloneVNode,
-  equalsVNode
+  equalsVNode,
+  createElement
 } from './dom/vnode';
 
 export type { VNode, VNodeChild, Component, Ref, ComponentInstance } from './dom/vnode';

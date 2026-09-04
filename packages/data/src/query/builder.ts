@@ -27,10 +27,15 @@ export class QueryBuilder {
   where(fieldOrClause: string | WhereClause, operator?: string, value?: any): this {
     if (typeof fieldOrClause === 'object') {
       this.conditions = { ...this.conditions, ...fieldOrClause };
-    } else if (operator) {
+    } else if (typeof operator === 'object') {
+      // Operator-object form: where('name', { contains: 'a' })
+      this.conditions[fieldOrClause] = operator;
+    } else if (typeof operator === 'string' && value !== undefined && isKnownOperator(operator)) {
+      // Operator form: where('age', 'gt', 30)
       this.conditions[fieldOrClause] = { [operator]: value };
     } else {
-      this.conditions[fieldOrClause] = value;
+      // Equality form: where('id', 1)
+      this.conditions[fieldOrClause] = operator;
     }
     return this;
   }
@@ -213,4 +218,14 @@ export class QueryBuilder {
   static from(table: string): QueryBuilder {
     return new QueryBuilder(table);
   }
+}
+
+const KNOWN_OPERATORS = [
+  'eq', 'ne', 'gt', 'gte', 'lt', 'lte',
+  'in', 'nin', 'contains', 'startsWith', 'endsWith',
+  'isNull', 'isNotNull', 'between'
+] as const;
+
+function isKnownOperator(op: string): boolean {
+  return (KNOWN_OPERATORS as readonly string[]).includes(op);
 }

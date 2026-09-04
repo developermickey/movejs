@@ -16,7 +16,7 @@ export function cors(options: {
     maxAge = 86400
   } = options;
 
-  return async (req: MoveRequest, res: MoveResponse) => {
+  return async (req: MoveRequest, res: MoveResponse, next: () => Promise<void> | void) => {
     const requestOrigin = req.header('origin') || '*';
 
     // Check if origin is allowed
@@ -49,6 +49,9 @@ export function cors(options: {
       res.end();
       return;
     }
+
+    // Continue the chain for regular requests
+    await next();
   };
 }
 
@@ -264,9 +267,22 @@ export function staticFiles(root: string, options: {
       '.json': 'application/json',
       '.png': 'image/png',
       '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
       '.gif': 'image/gif',
       '.svg': 'image/svg+xml',
-      '.ico': 'image/x-icon'
+      '.ico': 'image/x-icon',
+      '.woff': 'font/woff',
+      '.woff2': 'font/woff2',
+      '.ttf': 'font/ttf',
+      '.otf': 'font/otf',
+      '.eot': 'application/vnd.ms-fontobject',
+      '.webp': 'image/webp',
+      '.mp4': 'video/mp4',
+      '.webm': 'video/webm',
+      '.txt': 'text/plain',
+      '.xml': 'application/xml',
+      '.pdf': 'application/pdf',
+      '.zip': 'application/zip'
     };
 
     res.setHeader('Content-Type', mimeTypes[ext] || 'application/octet-stream');

@@ -7,12 +7,7 @@ function compilePattern(pattern: string): { regex: RegExp; params: string[] } {
   
   // Convert route pattern to regex
   let regexStr = pattern
-    // Convert [param] to named groups
-    .replace(/\[([^\]]+)\]/g, (_, param) => {
-      params.push(param);
-      return '([^/]+)';
-    })
-    // Convert [...rest] to catch-all
+    // Convert [...rest] to catch-all FIRST so it isn't matched by [param]
     .replace(/\[\.\.\.([^\]]+)\]/g, (_, param) => {
       params.push(param);
       return '(.*)';
@@ -21,6 +16,11 @@ function compilePattern(pattern: string): { regex: RegExp; params: string[] } {
     .replace(/\[\[([^\]]+)\]\]/g, (_, param) => {
       params.push(param);
       return '([^/]*)?';
+    })
+    // Convert [param] to named groups
+    .replace(/\[([^\]]+)\]/g, (_, param) => {
+      params.push(param);
+      return '([^/]+)';
     });
 
   // Add start and end anchors
